@@ -1,0 +1,12 @@
+connector:
+  name: rajatha-k8
+  identifier: rajathak8
+  description:
+  orgIdentifier: default
+  projectIdentifier: RajathaTest2
+  type: K8sCluster
+  spec:
+    credential:
+      type: InheritFromDelegate
+    delegateSelectors:
+    - rajatha-delegate-march
