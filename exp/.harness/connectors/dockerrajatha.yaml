@@ -1,0 +1,18 @@
+connector:
+  name: docker-rajatha
+  identifier: dockerrajatha
+  description:
+  orgIdentifier: default
+  projectIdentifier: RajathaTest2
+  type: DockerRegistry
+  spec:
+    dockerRegistryUrl: https://index.docker.io/v1/
+    providerType: DockerHub
+    auth:
+      type: UsernamePassword
+      spec:
+        username: rajatharanganath
+        usernameRef: null
+        passwordRef: rajatharanganath
+    delegateSelectors:
+    - tiwhite
