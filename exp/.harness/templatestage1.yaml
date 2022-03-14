@@ -1,0 +1,19 @@
+pipeline:
+    name: templatestage1
+    identifier: templatestage1
+    allowStageExecutions: false
+    projectIdentifier: RajathaTest2
+    orgIdentifier: default
+    tags: {}
+    properties:
+        ci:
+            codebase:
+                connectorRef: githubrajatha
+                build: <+input>
+    stages:
+        - stage:
+              name: stg1
+              identifier: stg1
+              template:
+                  templateRef: StgTemplate11
+                  versionLabel: "1"
