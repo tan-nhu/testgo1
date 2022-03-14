@@ -1,0 +1,27 @@
+template:
+    name: StgTemplate11
+    identifier: StgTemplate11
+    versionLabel: "1"
+    type: Stage
+    projectIdentifier: RajathaTest2
+    orgIdentifier: default
+    tags: {}
+    spec:
+        type: CI
+        spec:
+            cloneCodebase: true
+            infrastructure:
+                type: KubernetesDirect
+                spec:
+                    connectorRef: rajathak8
+                    namespace: rajatha-delegate-march
+            execution:
+                steps:
+                    - step:
+                          type: Run
+                          name: Docker Test
+                          identifier: Docker_Test
+                          spec:
+                              connectorRef: dockerrajatha
+                              image: alpine
+                              command: echo test
