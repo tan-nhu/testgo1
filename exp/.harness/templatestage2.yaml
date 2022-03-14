@@ -1,0 +1,45 @@
+pipeline:
+    name: templatestage2
+    identifier: templatestage2
+    allowStageExecutions: false
+    projectIdentifier: RajathaTest2
+    orgIdentifier: default
+    tags: {}
+    properties:
+        ci:
+            codebase:
+                connectorRef: githubrajatha
+                build: <+input>
+    stages:
+        - stage:
+              name: stg2
+              identifier: stg2
+              type: CI
+              spec:
+                  cloneCodebase: true
+                  infrastructure:
+                      type: KubernetesDirect
+                      spec:
+                          connectorRef: rajathak8
+                          namespace: rajatha-delegate-march
+                  execution:
+                      steps:
+                          - step:
+                                identifier: dockerimg
+                                type: Run
+                                name: dockerimg
+                                spec:
+                                    connectorRef: dockerrajatha
+                                    image: alpine
+                                    command: echo test
+              variables:
+                  - name: stageVar
+                    type: String
+                    value: rajatha
+                  - name: test
+                    type: String
+                    value: rajathaTest
+    variables:
+        - name: test
+          type: String
+          value: rajathaTest2
