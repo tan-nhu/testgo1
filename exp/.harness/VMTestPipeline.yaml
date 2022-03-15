@@ -1,0 +1,33 @@
+pipeline:
+    name: VMTestPipeline
+    identifier: VMTestPipeline
+    allowStageExecutions: false
+    projectIdentifier: RajathaTest2
+    orgIdentifier: default
+    tags: {}
+    properties:
+        ci:
+            codebase:
+                connectorRef: githubrajatha
+                build: <+input>
+    stages:
+        - stage:
+              name: stg1
+              identifier: stg1
+              type: CI
+              spec:
+                  cloneCodebase: true
+                  infrastructure:
+                      type: VM
+                      spec:
+                          type: Pool
+                          spec:
+                              identifier: rajatha-aws-vm-pool
+                  execution:
+                      steps:
+                          - step:
+                                type: Run
+                                name: echo test
+                                identifier: echo_test
+                                spec:
+                                    command: echo test
