@@ -32,19 +32,6 @@ pipeline:
                                     connectorRef: dockerrajatha
                                     image: alpine
                                     command: echo test
-                          - step:
-                                name: tmp1
-                                identifier: tmp1
-                                template:
-                                    templateRef: account.Sonar
-                                    versionLabel: Version1
-                                    templateInputs:
-                                        type: Plugin
-                                        spec:
-                                            connectorRef: <+input>
-                                            image: <+input>
-                                            settings:
-                                                sonat_name: <+input>
               variables:
                   - name: stageVar
                     type: String
