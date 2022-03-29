@@ -32,6 +32,15 @@ pipeline:
                                     connectorRef: dockerrajatha
                                     image: alpine
                                     command: echo test
+                          - step:
+                                name: dadCZSCD
+                                identifier: dadCZSCD
+                                template:
+                                    templateRef: Save_S3
+                                    versionLabel: "1"
+                                    templateInputs:
+                                        type: SaveCacheS3
+                                        sourcePaths: <+input>
               variables:
                   - name: stageVar
                     type: String
