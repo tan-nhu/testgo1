@@ -16,6 +16,7 @@ template:
                 spec:
                     connectorRef: rajathak8
                     namespace: rajatha-delegate-march
+                    initTimeout: 10m
             execution:
                 steps:
                     - step:
