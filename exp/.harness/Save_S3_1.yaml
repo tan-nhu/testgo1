@@ -1,0 +1,16 @@
+template:
+    name: Save S3
+    identifier: Save_S3
+    versionLabel: "1"
+    type: Step
+    projectIdentifier: RajathaTest2
+    orgIdentifier: default
+    tags: {}
+    spec:
+        type: SaveCacheS3
+        connectorRef: account.aws_30_day_connector_for_pms
+        region: us-east1
+        bucket: test
+        key: test
+        sourcePaths: <+input>
+        archiveFormat: Tar
