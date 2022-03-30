@@ -43,4 +43,10 @@ pipeline:
                                       spec:
                                           connectorRef: dockerrajatha
                                           image: alpine
-                                          command: echo <+pipeline.stages.CI_Build_Process.spec.execution.steps.test.output.outputVariables.utdone>
+                                          command: |-
+                                              echo <+pipeline.stages.CI_Build_Process.spec.execution.steps.test.output.outputVariables.utdone>
+                                              while [ <+pipeline.stages.CI_Build_Process.spec.execution.steps.Run_UT.output.outputVariables.utdone> != "done" ]
+                                              do
+                                                  sleep 60
+                                                  echo "waiting"
+                                              done
