@@ -24,11 +24,23 @@ pipeline:
                           namespace: rajatha-delegate-march
                   execution:
                       steps:
-                          - step:
-                                type: Run
-                                name: test
-                                identifier: test
-                                spec:
-                                    connectorRef: dockerrajatha
-                                    image: alpine
-                                    command: echo test
+                          - parallel:
+                                - step:
+                                      type: Run
+                                      name: test
+                                      identifier: test
+                                      spec:
+                                          connectorRef: dockerrajatha
+                                          image: alpine
+                                          command: |-
+                                              echo test
+                                              sleep 1000
+                                              export utdone="done"
+                                - step:
+                                      type: Run
+                                      name: test2
+                                      identifier: test2
+                                      spec:
+                                          connectorRef: dockerrajatha
+                                          image: alpine
+                                          command: echo <+pipeline.stages.CI_Build_Process.spec.execution.steps.test.output.outputVariables.utdone>
