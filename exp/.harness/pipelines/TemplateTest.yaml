@@ -43,4 +43,4 @@ pipeline:
                                     connectorRef: dockerrajatha
                                     image: alpine
                                     command: |
-                                        echo <+pipeline.stages.stage1.spec.execution.steps.test.output.outputVariables.utdone>
+                                        echo <+pipeline.stages.stage1.spec.execution.steps.test.output.outputVariables>
