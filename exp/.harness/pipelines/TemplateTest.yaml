@@ -24,29 +24,23 @@ pipeline:
                           namespace: rajatha-delegate-march
                   execution:
                       steps:
-                          - parallel:
-                                - step:
-                                      type: Run
-                                      name: test
-                                      identifier: test
-                                      spec:
-                                          connectorRef: dockerrajatha
-                                          image: alpine
-                                          command: |-
-                                              echo test
-                                              export utdone="done"
-                                              sleep 120
-                                - step:
-                                      type: Run
-                                      name: test2
-                                      identifier: test2
-                                      spec:
-                                          connectorRef: dockerrajatha
-                                          image: alpine
-                                          command: |-
-                                              echo <+pipeline.stages.stage1.spec.execution.steps.test.output.outputVariables.utdone>
-                                              while [ <+pipeline.stages.stage1.spec.execution.steps.test.output.outputVariables.utdone> != "done" ]
-                                              do
-                                                  sleep 60
-                                                  echo "waiting"
-                                              done
+                          - step:
+                                type: Run
+                                name: test
+                                identifier: test
+                                spec:
+                                    connectorRef: dockerrajatha
+                                    image: alpine
+                                    command: |-
+                                        echo test
+                                        export utdone="done"
+                                        sleep 120
+                          - step:
+                                type: Run
+                                name: test2
+                                identifier: test2
+                                spec:
+                                    connectorRef: dockerrajatha
+                                    image: alpine
+                                    command: |
+                                        echo <+pipeline.stages.stage1.spec.execution.steps.test.output.outputVariables.utdone>
