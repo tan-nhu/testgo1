@@ -31,16 +31,8 @@ pipeline:
                                 spec:
                                     connectorRef: dockerrajatha
                                     image: alpine
-                                    command: |-
-                                        echo test
-                                        export utdone="done"
-                                        sleep 120
-                          - step:
-                                type: Run
-                                name: test2
-                                identifier: test2
-                                spec:
-                                    connectorRef: dockerrajatha
-                                    image: alpine
-                                    command: |
-                                        echo <+pipeline.stages.stage1.spec.execution.steps.test.output.outputVariables>
+                                    command: echo "<+pipeline.variables.MAGIC.toLowerCase()>"
+    variables:
+        - name: MAGIC
+          type: String
+          value: <+input>
