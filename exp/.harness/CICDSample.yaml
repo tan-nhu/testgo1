@@ -88,4 +88,4 @@ pipeline:
     variables:
         - name: MAGIC
           type: String
-          value: RAJATHA
+          value: <+input>
