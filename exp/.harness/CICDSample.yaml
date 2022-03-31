@@ -56,13 +56,6 @@ pipeline:
                   execution:
                       steps:
                           - step:
-                                name: Rollout Deployment
-                                identifier: rolloutDeployment
-                                type: K8sRollingDeploy
-                                timeout: 10m
-                                spec:
-                                    skipDryRun: false
-                          - step:
                                 type: ShellScript
                                 name: stg2
                                 identifier: stg2
@@ -84,6 +77,7 @@ pipeline:
                                 type: K8sRollingRollback
                                 timeout: 10m
                                 spec: {}
+                  serviceDependencies: []
               tags: {}
               failureStrategies:
                   - onFailure:
