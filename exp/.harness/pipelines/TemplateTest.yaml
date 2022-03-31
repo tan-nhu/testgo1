@@ -34,8 +34,8 @@ pipeline:
                                           image: alpine
                                           command: |-
                                               echo test
-                                              sleep 1000
                                               export utdone="done"
+                                              sleep 120
                                 - step:
                                       type: Run
                                       name: test2
