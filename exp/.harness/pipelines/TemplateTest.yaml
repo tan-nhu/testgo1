@@ -31,7 +31,8 @@ pipeline:
                                 spec:
                                     connectorRef: dockerrajatha
                                     image: alpine
-                                    command: echo "<+pipeline.variables.MAGIC.toLowerCase()>"
+                                    shell: Sh
+                                    command: echo "<+<+pipeline.variables.MAGIC>.toLowerCase()>"
     variables:
         - name: MAGIC
           type: String
