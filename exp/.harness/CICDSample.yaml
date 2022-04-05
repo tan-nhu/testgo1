@@ -31,7 +31,8 @@ pipeline:
                                 spec:
                                     connectorRef: dockerrajatha
                                     image: alpine
-                                    command: echo "<+pipeline.variables.MAGIC.toLowerCase()>"
+                                    shell: Sh
+                                    command: echo "<+<+pipeline.variables.MAGIC>.toLowerCase()>"
         - stage:
               name: deploy
               identifier: deploy
@@ -65,7 +66,7 @@ pipeline:
                                     source:
                                         type: Inline
                                         spec:
-                                            script: echo "<+pipeline.variables.MAGIC.toLowerCase()>"
+                                            script: echo "<+<+pipeline.variables.MAGIC>.toLowerCase()>"
                                     environmentVariables: []
                                     outputVariables: []
                                     executionTarget: {}
