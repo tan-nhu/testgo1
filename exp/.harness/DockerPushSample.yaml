@@ -36,6 +36,8 @@ pipeline:
                                         echo <+codebase.targetBranch>
                                         echo <+codebase.sourceBranch>
                                         export LATEST_BRANCH = "master"
+                                    outputVariables:
+                                        - name: LATEST_BRANCH
                           - step:
                                 type: BuildAndPushDockerRegistry
                                 name: build and push
