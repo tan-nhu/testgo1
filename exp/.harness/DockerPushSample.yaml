@@ -29,8 +29,9 @@ pipeline:
                                 name: runtest
                                 identifier: runtest
                                 spec:
-                                    connectorRef: docker
+                                    connectorRef: dockerrajatha
                                     image: golang:1.15
+                                    shell: Sh
                                     command: |-
                                         go get gotest.tools/gotestsum
                                         gotestsum --format=standard-verbose --junitfile unit-tests.xml || true
@@ -45,7 +46,7 @@ pipeline:
                                 name: build and push
                                 identifier: build_and_push
                                 spec:
-                                    connectorRef: docker
+                                    connectorRef: dockerrajatha
                                     repo: rajatharanganath/ciquickstart
                                     tags:
                                         - <+pipeline.sequenceId>
