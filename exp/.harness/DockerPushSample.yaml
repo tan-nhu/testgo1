@@ -26,8 +26,8 @@ pipeline:
                       steps:
                           - step:
                                 type: Run
-                                name: runtest
-                                identifier: runtest
+                                name: run
+                                identifier: run
                                 spec:
                                     connectorRef: dockerrajatha
                                     image: alpine
@@ -35,13 +35,6 @@ pipeline:
                                     command: |-
                                         echo <+pipeline>
                                         export LATEST_BRANCH = "master"
-                                    reports:
-                                        type: JUnit
-                                        spec:
-                                            paths:
-                                                - "*.xml"
-                                    outputVariables:
-                                        - name: LATEST_BRANCH
                           - step:
                                 type: BuildAndPushDockerRegistry
                                 name: build and push
