@@ -33,6 +33,7 @@ pipeline:
                                     image: alpine
                                     shell: Sh
                                     command: |-
+                                        #!/bin/sh
                                         echo <+codebase.targetBranch>
                                         echo <+codebase.sourceBranch>
                                         LATEST_BRANCH = "master"
