@@ -47,3 +47,4 @@ pipeline:
                                     repo: rajatharanganath/ciquickstart
                                     tags:
                                         - <+pipeline.sequenceId>
+                                        - <+execution.steps.run.output.outputVariables.LATEST_BRANCH>
