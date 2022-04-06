@@ -30,17 +30,18 @@ pipeline:
                                 identifier: runtest
                                 spec:
                                     connectorRef: dockerrajatha
-                                    image: golang:1.15
+                                    image: alpine
                                     shell: Sh
                                     command: |-
-                                        go get gotest.tools/gotestsum
-                                        gotestsum --format=standard-verbose --junitfile unit-tests.xml || true
-                                        CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -tags netgo
+                                        echo <+pipeline>
+                                        export LATEST_BRANCH = "master"
                                     reports:
                                         type: JUnit
                                         spec:
                                             paths:
                                                 - "*.xml"
+                                    outputVariables:
+                                        - name: LATEST_BRANCH
                           - step:
                                 type: BuildAndPushDockerRegistry
                                 name: build and push
