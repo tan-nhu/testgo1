@@ -32,12 +32,11 @@ pipeline:
                                     connectorRef: dockerrajatha
                                     image: alpine
                                     shell: Sh
-                                    command: |-
+                                    command: |
                                         #!/bin/sh
                                         echo <+codebase.targetBranch>
                                         echo <+codebase.sourceBranch>
-                                        LATEST_BRANCH = "master"
-                                        export LATEST_BRANCH
+                                        export LATEST_BRANCH="master"
                                     outputVariables:
                                         - name: LATEST_BRANCH
                           - step:
