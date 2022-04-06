@@ -33,7 +33,8 @@ pipeline:
                                     image: alpine
                                     shell: Sh
                                     command: |-
-                                        echo <+pipeline>
+                                        echo <+codebase.targetBranch>
+                                        echo <+codebase.sourceBranch>
                                         export LATEST_BRANCH = "master"
                           - step:
                                 type: BuildAndPushDockerRegistry
