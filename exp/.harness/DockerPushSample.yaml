@@ -31,7 +31,7 @@ pipeline:
                                 spec:
                                     connectorRef: dockerrajatha
                                     image: alpine
-                                    shell: Bash
+                                    shell: Sh
                                     command: |-
                                         echo <+codebase.targetBranch>
                                         echo <+codebase.sourceBranch>
