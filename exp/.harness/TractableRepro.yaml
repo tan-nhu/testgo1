@@ -34,7 +34,6 @@ pipeline:
                                         type: Run
                                         spec:
                                             envVariables:
-                                                ENV: <+input>
                                                 SPEC: <+input>
                                                 TAGS: <+input>
                                                 SLACK_CHANNEL: <+input>
