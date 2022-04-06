@@ -35,7 +35,8 @@ pipeline:
                                     command: |-
                                         echo <+codebase.targetBranch>
                                         echo <+codebase.sourceBranch>
-                                        export LATEST_BRANCH = "master"
+                                        LATEST_BRANCH = "master"
+                                        export LATEST_BRANCH
                                     outputVariables:
                                         - name: LATEST_BRANCH
                           - step:
