@@ -1,0 +1,38 @@
+template:
+    name: TractableStepTemplate
+    identifier: TractableStepTemplate
+    versionLabel: "1"
+    type: Step
+    projectIdentifier: RajathaTest2
+    orgIdentifier: default
+    tags: {}
+    spec:
+        type: Run
+        spec:
+            connectorRef: dockerrajatha
+            image: alpine
+            shell: Bash
+            command: |
+                
+                if [[ -z "${TAGS}" ]]; then
+                  TAG_STRING=""
+                else
+                  TAG_STRING="--tags '${TAGS}'"
+                fi;
+
+
+                echo ${ENV}
+                echo ${TAG_STRING}
+                echo ${SPEC}
+            envVariables:
+                AWS_REGION: <+input>
+                ENV: <+input>
+                SPEC: <+input>
+                TAGS: <+input>
+                SLACK_CHANNEL: <+input>
+            imagePullPolicy: Always
+            resources:
+                limits:
+                    memory: 1Gi
+                    cpu: "2"
+        description: Gauge E2E API tests
