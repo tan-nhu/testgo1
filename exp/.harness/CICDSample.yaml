@@ -32,7 +32,7 @@ pipeline:
                                     connectorRef: dockerrajatha
                                     image: alpine
                                     shell: Sh
-                                    command: echo "<+<+pipeline.variables.MAGIC>.toLowerCase()>"
+                                    command: echo "<+<+codebase.branch>+"-"+<+pipeline.sequenceId>>"
         - stage:
               name: deploy
               identifier: deploy
