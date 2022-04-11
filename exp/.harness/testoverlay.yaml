@@ -1,0 +1,9 @@
+overlayInputSet:
+    name: testoverlay
+    identifier: testoverlay
+    orgIdentifier: default
+    projectIdentifier: RajathaTest2
+    pipelineIdentifier: TemplateTest
+    inputSetReferences:
+        - InputSetTest1
+    tags: {}
