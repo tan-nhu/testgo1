@@ -32,7 +32,11 @@ pipeline:
                                     connectorRef: dockerrajatha
                                     image: alpine
                                     shell: Sh
-                                    command: echo "<+<+codebase.branch>+"-"+<+pipeline.sequenceId>>"
+                                    command: echo <+build.variables.BuildIdentifier>
+              variables:
+                  - name: BuildIdentifier
+                    type: String
+                    value: <+<+codebase.branch>+"-"+<+pipeline.sequenceId>>
         - stage:
               name: deploy
               identifier: deploy
