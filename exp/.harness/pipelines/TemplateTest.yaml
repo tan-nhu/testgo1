@@ -36,6 +36,25 @@ pipeline:
               when:
                   pipelineStatus: Success
               failureStrategies: []
+        - stage:
+              name: stg2
+              identifier: stg2
+              type: CI
+              spec:
+                  cloneCodebase: true
+                  infrastructure:
+                      useFromStage: stage1
+                  execution:
+                      steps:
+                          - step:
+                                type: Run
+                                name: sdwafsdf
+                                identifier: sdwafsdf
+                                spec:
+                                    connectorRef: dockerrajatha
+                                    image: alpine
+                                    shell: Sh
+                                    command: echo test
     variables:
         - name: MAGIC
           type: String
