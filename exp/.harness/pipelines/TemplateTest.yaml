@@ -1,7 +1,7 @@
 pipeline:
     name: TemplateTest
     identifier: TemplateTest
-    allowStageExecutions: false
+    allowStageExecutions: true
     projectIdentifier: RajathaTest2
     orgIdentifier: default
     tags: {}
@@ -33,6 +33,9 @@ pipeline:
                                     image: alpine
                                     shell: Sh
                                     command: echo "<+<+pipeline.variables.MAGIC>.toLowerCase()>"
+              when:
+                  pipelineStatus: Success
+              failureStrategies: []
     variables:
         - name: MAGIC
           type: String
