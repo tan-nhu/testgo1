@@ -30,7 +30,7 @@ pipeline:
                                 identifier: run
                                 spec:
                                     connectorRef: dockerrajatha
-                                    image: alpine
+                                    image: golang:1.15
                                     shell: Sh
                                     command: |-
                                         #!/bin/sh
@@ -43,6 +43,10 @@ pipeline:
                                         else
                                            export LATEST_BRANCH="hellotag, non-master"
                                         fi
+
+                                        go get gotest.tools/gotestsum
+                                        gotestsum --format=standard-verbose --junitfile unit-tests.xml || true
+                                        CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -tags netgo
                                     outputVariables:
                                         - name: LATEST_BRANCH
                           - step:
