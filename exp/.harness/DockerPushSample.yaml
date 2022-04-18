@@ -32,11 +32,17 @@ pipeline:
                                     connectorRef: dockerrajatha
                                     image: alpine
                                     shell: Sh
-                                    command: |
+                                    command: |-
                                         #!/bin/sh
                                         echo <+codebase.targetBranch>
                                         echo <+codebase.sourceBranch>
                                         export LATEST_BRANCH="master"
+                                        if [ <+codebase.targetBranch> == "master" ]
+                                        then
+                                           export LATEST_BRANCH="heelotag, master"
+                                        else
+                                           export LATEST_BRANCH="hellotag"
+                                        fi
                                     outputVariables:
                                         - name: LATEST_BRANCH
                           - step:
@@ -48,3 +54,4 @@ pipeline:
                                     repo: rajatharanganath/ciquickstart
                                     tags:
                                         - <+pipeline.sequenceId>
+                                        - <+execution.steps.run.output.outputVariables.LATEST_BRANCH>
