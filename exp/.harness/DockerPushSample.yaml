@@ -41,7 +41,7 @@ pipeline:
                                         then
                                            export LATEST_BRANCH="heelotag, master"
                                         else
-                                           export LATEST_BRANCH="hellotag"
+                                           export LATEST_BRANCH="hellotag, non-master"
                                         fi
                                     outputVariables:
                                         - name: LATEST_BRANCH
