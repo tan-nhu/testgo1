@@ -54,7 +54,9 @@ pipeline:
                                     connectorRef: dockerrajatha
                                     image: alpine
                                     shell: Sh
-                                    command: echo test
+                                    command: |-
+                                        echo test
+                                        echo test2
     variables:
         - name: MAGIC
           type: String
