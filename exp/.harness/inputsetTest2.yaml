@@ -1,0 +1,18 @@
+inputSet:
+  identifier: "inputsetTest2"
+  name: "inputsetTest2"
+  orgIdentifier: "default"
+  projectIdentifier: "RajathaTest2"
+  pipeline:
+    identifier: "TemplateTest"
+    properties:
+      ci:
+        codebase:
+          build:
+            type: "branch"
+            spec:
+              branch: "main"
+    variables:
+    - name: "MAGIC"
+      type: "String"
+      value: "ABC"
