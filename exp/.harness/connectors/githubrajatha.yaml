@@ -19,6 +19,6 @@ connector:
       spec:
         tokenRef: rajatharanganath
     delegateSelectors:
-    - rajatha-delegate-march
+    - rajatha-delegate-april
     executeOnDelegate: true
     type: Repo
