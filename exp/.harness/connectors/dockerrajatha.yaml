@@ -14,4 +14,4 @@ connector:
         username: rajatharanganath
         passwordRef: rajatharanganath1
     delegateSelectors:
-    - rajatha-delegate-march
+    - rajatha-delegate-april
