@@ -61,3 +61,62 @@ pipeline:
                                         - <+pipeline.sequenceId>
                                         - <+execution.steps.run.output.outputVariables.LATEST_BRANCH>
                                         - pr-<+codebase.prNumber>
+        - stage:
+              name: stg2
+              identifier: stg2
+              description: ""
+              type: Deployment
+              spec:
+                  serviceConfig:
+                      serviceRef: lscjf
+                      serviceDefinition:
+                          type: Kubernetes
+                          spec:
+                              variables: []
+                              manifests: []
+                  infrastructure:
+                      environmentRef: dev
+                      infrastructureDefinition:
+                          type: KubernetesDirect
+                          spec:
+                              connectorRef: rajathak8
+                              namespace: rajatha-delegate-april
+                              releaseName: release-<+INFRA_KEY>
+                      allowSimultaneousDeployments: false
+                  execution:
+                      steps:
+                          - step:
+                                type: ShellScript
+                                name: stp1
+                                identifier: stp1
+                                spec:
+                                    shell: Bash
+                                    onDelegate: true
+                                    source:
+                                        type: Inline
+                                        spec:
+                                            script: |-
+                                                echo <+codebase.prNumber>
+                                                echo test
+                                    environmentVariables: []
+                                    outputVariables: []
+                                    executionTarget: {}
+                                timeout: 10m
+                      rollbackSteps: []
+              tags: {}
+              failureStrategies:
+                  - onFailure:
+                        errors:
+                            - Unknown
+                        action:
+                            type: StageRollback
+                  - onFailure:
+                        errors:
+                            - AllErrors
+                        action:
+                            type: ManualIntervention
+                            spec:
+                                timeout: 10m
+                                onTimeout:
+                                    action:
+                                        type: Abort
