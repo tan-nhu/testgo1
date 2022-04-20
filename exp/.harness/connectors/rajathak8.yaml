@@ -9,4 +9,4 @@ connector:
     credential:
       type: InheritFromDelegate
     delegateSelectors:
-    - rajatha-delegate-march
+    - rajatha-delegate-april
