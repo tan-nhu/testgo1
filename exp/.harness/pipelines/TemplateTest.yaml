@@ -32,7 +32,9 @@ pipeline:
                                     connectorRef: dockerrajatha
                                     image: alpine
                                     shell: Sh
-                                    command: echo "<+<+pipeline.variables.MAGIC>.toLowerCase()>"
+                                    command: |-
+                                        echo "<+<+pipeline.variables.MAGIC>.toLowerCase()>"
+                                        echo pr-<+codebase.prNumber>
               when:
                   pipelineStatus: Success
               failureStrategies: []
