@@ -21,7 +21,8 @@ pipeline:
                       type: KubernetesDirect
                       spec:
                           connectorRef: rajathak8
-                          namespace: rajatha-delegate-march
+                          namespace: rajatha-delegate-april
+                          automountServiceAccountToken: true
                   execution:
                       steps:
                           - step:
