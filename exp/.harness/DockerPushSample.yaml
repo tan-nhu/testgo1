@@ -59,3 +59,4 @@ pipeline:
                                     tags:
                                         - <+pipeline.sequenceId>
                                         - <+execution.steps.run.output.outputVariables.LATEST_BRANCH>
+                                        - pr-<+codebase.prNumber>
