@@ -22,7 +22,7 @@ pipeline:
                       spec:
                           connectorRef: rajathak8
                           namespace: rajatha-delegate-april
-                          automountServiceAccountToken: true
+                          automountServiceAccountToken: false
                           containerSecurityContext:
                               runAsUser: "1000"
                   execution:
@@ -41,7 +41,6 @@ pipeline:
               when:
                   pipelineStatus: Success
               failureStrategies: []
-              variables: []
         - stage:
               name: stg2
               identifier: stg2
