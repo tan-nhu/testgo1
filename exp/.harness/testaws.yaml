@@ -1,0 +1,12 @@
+connector:
+  name: testaws
+  identifier: testaws
+  description:
+  orgIdentifier: default
+  projectIdentifier: RajathaTest2
+  type: Aws
+  spec:
+    credential:
+      type: InheritFromDelegate
+    delegateSelectors:
+    - rajatha-delegate-april
