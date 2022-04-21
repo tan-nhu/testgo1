@@ -24,6 +24,7 @@ pipeline:
                           namespace: rajatha-delegate-april
                           automountServiceAccountToken: true
                           containerSecurityContext:
+                              allowPrivilegeEscalation: false
                               runAsUser: "1000"
                   execution:
                       steps:
