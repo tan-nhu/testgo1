@@ -7,8 +7,7 @@ pipeline:
     properties:
         ci:
             codebase:
-                connectorRef: nikpwingssoftware
-                repoName: payment-service
+                connectorRef: githubrajatha
                 build: <+input>
     stages:
         - stage:
