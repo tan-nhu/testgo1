@@ -270,9 +270,6 @@ pipeline:
           type: String
           default: payment-service
           value: <+input>
-        - name: seusername
-          type: String
-          value: <+input>
         - name: ffsdkkeyprod
           type: String
           default: 44c9dcaa-dab2-4100-b2b5-75bdeb7aa497
