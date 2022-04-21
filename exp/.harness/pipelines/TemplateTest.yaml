@@ -23,6 +23,8 @@ pipeline:
                           connectorRef: rajathak8
                           namespace: rajatha-delegate-april
                           automountServiceAccountToken: true
+                          containerSecurityContext:
+                              runAsUser: "1000"
                   execution:
                       steps:
                           - step:
@@ -39,6 +41,7 @@ pipeline:
               when:
                   pipelineStatus: Success
               failureStrategies: []
+              variables: []
         - stage:
               name: stg2
               identifier: stg2
