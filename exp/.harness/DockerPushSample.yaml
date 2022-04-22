@@ -71,7 +71,7 @@ pipeline:
               type: Deployment
               spec:
                   serviceConfig:
-                      serviceRef: lscjf
+                      serviceRef: <+input>.allowedValues(a, b, c)
                       serviceDefinition:
                           type: Kubernetes
                           spec:
