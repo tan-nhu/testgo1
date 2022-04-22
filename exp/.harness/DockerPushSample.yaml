@@ -71,7 +71,7 @@ pipeline:
               type: Deployment
               spec:
                   serviceConfig:
-                      serviceRef: <+input>.allowedValues(a, b, c)
+                      serviceRef: <+input>
                       serviceDefinition:
                           type: Kubernetes
                           spec:
