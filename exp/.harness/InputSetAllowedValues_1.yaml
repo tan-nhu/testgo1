@@ -1,0 +1,33 @@
+template:
+    name: InputSetAllowedValues
+    identifier: InputSetAllowedValues
+    versionLabel: "1"
+    type: Stage
+    projectIdentifier: RajathaTest2
+    orgIdentifier: default
+    description: null
+    tags: {}
+    spec:
+        type: CI
+        spec:
+            cloneCodebase: true
+            infrastructure:
+                type: KubernetesDirect
+                spec:
+                    connectorRef: rajathak8
+                    namespace: rajatha-delegate-april
+            execution:
+                steps:
+                    - step:
+                          type: Run
+                          name: adad
+                          identifier: adad
+                          spec:
+                              connectorRef: dockerrajatha
+                              image: alpine
+                              shell: Sh
+                              command: echo test
+        variables:
+            - name: MAGIC_TEMPLATE_VAR
+              type: String
+              value: <+input>.allowedValues(a,b,c)
