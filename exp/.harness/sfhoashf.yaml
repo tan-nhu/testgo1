@@ -1,0 +1,36 @@
+pipeline:
+    name: sfhoashf
+    identifier: sfhoashf
+    allowStageExecutions: false
+    stages:
+        - stage:
+              name: sfasdf
+              identifier: sfasdf
+              type: CI
+              spec:
+                  cloneCodebase: true
+                  infrastructure:
+                      type: KubernetesDirect
+                      spec:
+                          connectorRef: rajathak8
+                          namespace: rajatha-delegate-april
+                          automountServiceAccountToken: true
+                  execution:
+                      steps:
+                          - step:
+                                type: Run
+                                name: asfasf
+                                identifier: asfasf
+                                spec:
+                                    connectorRef: dockerrajatha
+                                    image: alpine
+                                    shell: Sh
+                                    command: echo test
+    projectIdentifier: RajathaTest2
+    orgIdentifier: default
+    tags: {}
+    properties:
+        ci:
+            codebase:
+                connectorRef: githubrajatha
+                build: <+input>
