@@ -1,0 +1,15 @@
+connector:
+  name: xdxgdfg
+  identifier: xdxgdfg
+  description:
+  orgIdentifier: default
+  projectIdentifier: RajathaTest2
+  type: Git
+  spec:
+    url: https://dbsakdhkashdf
+    validationRepo: zdfsadf
+    type: Http
+    connectionType: Account
+    spec:
+      username: awsdasf
+      passwordRef: rajatharanganath1
