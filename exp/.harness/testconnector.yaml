@@ -6,7 +6,7 @@ connector:
   projectIdentifier: RajathaTest2
   type: Github
   spec:
-    url: https://github.com/rajatharanganath/testgo
+    url: https://github.com/harness/harness-core
     authentication:
       type: Http
       spec:
