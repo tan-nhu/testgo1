@@ -1,0 +1,20 @@
+connector:
+  name: testneuronconnector
+  identifier: testneuronconnector
+  description:
+  orgIdentifier: default
+  projectIdentifier: RajathaTest2
+  type: Github
+  spec:
+    url: https://github.com/rajathar/neuron
+    authentication:
+      type: Http
+      spec:
+        type: UsernameToken
+        spec:
+          username: rajatharanganath
+          tokenRef: rajatharanganath
+    delegateSelectors:
+    - rajatha-delegate-april
+    executeOnDelegate: true
+    type: Repo
