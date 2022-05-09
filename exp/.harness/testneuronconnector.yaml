@@ -12,8 +12,8 @@ connector:
       spec:
         type: UsernameToken
         spec:
-          username: rajatharanganath
-          tokenRef: rajatharanganath
+          username: rajathar
+          tokenRef: rajathar
     delegateSelectors:
     - rajatha-delegate-april
     executeOnDelegate: true
