@@ -6,7 +6,7 @@ connector:
   projectIdentifier: RajathaTest2
   type: Github
   spec:
-    url: https://github.com/rajathar/neuron
+    url: https://github.com/rajathar/blockchain-landrecords
     authentication:
       type: Http
       spec:
