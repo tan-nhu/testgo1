@@ -64,6 +64,14 @@ pipeline:
                                         - <+pipeline.sequenceId>
                                         - <+execution.steps.run.output.outputVariables.LATEST_BRANCH>
                                         - pr-<+codebase.prNumber>
+                          - step:
+                                type: BuildAndPushDockerRegistry
+                                name: zdfsdfg
+                                identifier: zdfsdfg
+                                spec:
+                                    connectorRef: dockerrajatha
+                                    repo: test
+                                    tags: <+input>
         - stage:
               name: stg2
               identifier: stg2
