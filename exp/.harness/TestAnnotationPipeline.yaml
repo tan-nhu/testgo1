@@ -1,0 +1,49 @@
+pipeline:
+    name: TestAnnotationPipeline
+    identifier: TestAnnotationPipeline
+    projectIdentifier: RajathaTest2
+    orgIdentifier: default
+    tags: {}
+    properties:
+        ci:
+            codebase:
+                connectorRef: githubrajatha
+                build: <+input>
+    stages:
+        - stage:
+              name: stg1
+              identifier: stg1
+              type: CI
+              spec:
+                  cloneCodebase: true
+                  infrastructure:
+                      type: KubernetesDirect
+                      spec:
+                          connectorRef: rajathak8
+                          namespace: rajatha-delegate-april
+                          volumes:
+                              - mountPath: sdgdsfg
+                                type: EmptyDir
+                                spec:
+                                    medium: dagdfg
+                                    size: 5Gi
+                          annotations:
+                              ABC: abc
+                          automountServiceAccountToken: true
+                          tolerations:
+                              - effect: dsfdsg
+                                key: sdgdsfg
+                                operator: asfdsfg
+                                value: sdagfdsg
+                          nodeSelector: {}
+                  execution:
+                      steps:
+                          - step:
+                                type: Run
+                                name: test
+                                identifier: test
+                                spec:
+                                    connectorRef: dockerrajatha
+                                    image: alpine
+                                    shell: Sh
+                                    command: echo test
