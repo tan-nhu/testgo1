@@ -1,0 +1,24 @@
+connector:
+  name: WingsSoftwareSpringboot
+  identifier: WingsSoftwareSpringboot
+  description:
+  orgIdentifier: default
+  projectIdentifier: RajathaTest2
+  type: Github
+  spec:
+    url: https://github.com/wings-software/springboot
+    authentication:
+      type: Http
+      spec:
+        type: UsernameToken
+        spec:
+          username: rajatharanganath
+          tokenRef: rajatharanganath
+    apiAccess:
+      type: Token
+      spec:
+        tokenRef: rajatharanganath
+    delegateSelectors:
+    - rajatha-delegate-april
+    executeOnDelegate: true
+    type: Repo
