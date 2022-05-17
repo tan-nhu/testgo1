@@ -13,11 +13,11 @@ connector:
         type: UsernameToken
         spec:
           username: rajatharanganath
-          tokenRef: rajatharanganath
+          tokenRef: rajathaspringboot
     apiAccess:
       type: Token
       spec:
-        tokenRef: rajatharanganath
+        tokenRef: rajathaspringboot
     delegateSelectors:
     - rajatha-delegate-april
     executeOnDelegate: true
