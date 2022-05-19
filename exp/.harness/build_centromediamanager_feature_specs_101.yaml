@@ -1,0 +1,53 @@
+template:
+    name: "build_centromediamanager_feature_specs "
+    identifier: build_centromediamanager_feature_specs
+    versionLabel: 1.0.1
+    type: Step
+    projectIdentifier: RajathaTest2
+    orgIdentifier: default
+    spec:
+        type: Run
+        spec:
+            connectorRef: org.harness_artifactory_docker
+            image: artifactory.basis.net/basis/basis:base-dev
+            shell: Sh
+            command: |-
+                wget --no-check-certificate -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add -
+                sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list'
+                apt-get update && apt-get install -y google-chrome-stable
+                npm --prefix components/ui link /data/cmm/components/ui
+                npm --prefix components/ui install
+                npm --prefix components/ui run build:dev
+
+                bundle install
+
+                env | sort
+                bundle exec rake spec:chunky
+            privileged: false
+            reports:
+                type: JUnit
+                spec:
+                    paths:
+                        - /harness/reports/results-*.xml
+            envVariables:
+                LC_ALL: en_US.UTF-8
+                TZ: America/Chicago
+                RAILS_ENV: test
+                DISABLE_SPRING: "true"
+                GENERATE_REPORTS: "true"
+                CI_REPORTS: reports
+                AUTH_DATABASE_USERNAME: cmm
+                AUTH_DATABASE_PASSWORD: password
+                BI_EXPORT_DATABASE_USERNAME: cmm
+                BI_EXPORT_DATABASE_PASSWORD: password
+                CMM_DATABASE_USERNAME: cmm
+                CMM_DATABASE_PASSWORD: password
+                CHUNK: <+input>
+                TOTAL_CHUNKS: <+input>
+                NO_COVERAGE: "true"
+            imagePullPolicy: Always
+            resources:
+                limits:
+                    memory: 4000Mi
+                    cpu: "1"
+        timeout: 1h
