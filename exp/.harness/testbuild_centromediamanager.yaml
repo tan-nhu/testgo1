@@ -1,0 +1,230 @@
+pipeline:
+    name: test-build_centro-media-manager
+    identifier: testbuild_centromediamanager
+    projectIdentifier: RajathaTest2
+    orgIdentifier: default
+    tags: {}
+    stages:
+        - stage:
+              name: lint
+              identifier: lint
+              type: CI
+              spec:
+                  cloneCodebase: true
+                  infrastructure:
+                      type: KubernetesDirect
+                      spec:
+                          connectorRef: org.harness_kubernetes_eks_bld
+                          namespace: build-namespace
+                          initTimeout: 1h
+                  execution:
+                      steps:
+                          - step:
+                                type: RestoreCacheS3
+                                name: restore lint cache
+                                identifier: restore_testing_cache
+                                spec:
+                                    connectorRef: org.harness_aws_s3_build_cache
+                                    region: us-west-2
+                                    bucket: harness-build-cache
+                                    key: basis-platform-rubocop-cache
+                                    archiveFormat: Tar
+                                    failIfKeyNotFound: false
+                                when:
+                                    stageStatus: Success
+                                failureStrategies: []
+                          - parallel:
+                                - step:
+                                      type: Run
+                                      name: rubocop
+                                      identifier: rubocop
+                                      spec:
+                                          connectorRef: org.harness_artifactory_docker
+                                          image: artifactory.basis.net/basis/basis:base-dev
+                                          shell: Sh
+                                          command: bundle exec rubocop --parallel --display-time --cache true --cache-root /test_artifacts/.cache/rubocop_cache
+                                          privileged: false
+                                          envVariables:
+                                              RUBOCOP_CACHE_ROOT: /test_artifacts/.cache/rubocop_cache
+                                          imagePullPolicy: Always
+                                          resources:
+                                              limits:
+                                                  memory: 3000Mi
+                                                  cpu: "1.0"
+                                      failureStrategies: []
+                                - step:
+                                      type: Run
+                                      name: brakeman
+                                      identifier: brakemann
+                                      spec:
+                                          connectorRef: org.harness_artifactory_docker
+                                          image: artifactory.basis.net/basis/basis:base-dev
+                                          shell: Sh
+                                          command: |-
+                                              
+                                              bundle exec brakeman -A --no-progress
+                                          privileged: false
+                                          imagePullPolicy: Always
+                                          resources:
+                                              limits:
+                                                  memory: 500Mi
+                                                  cpu: "0.2"
+                                      failureStrategies: []
+                                - step:
+                                      type: Run
+                                      name: npm-lint
+                                      identifier: npmlint
+                                      spec:
+                                          connectorRef: org.harness_artifactory_docker
+                                          image: artifactory.basis.net/basis/basis:base-dev
+                                          shell: Sh
+                                          command: |-
+                                              npm config set cache /test_artifacts/.cache/.npm-cache --global 
+                                              cd components/ui
+                                              npm cache add .
+                                              npm install
+                                              npm run lint
+                                          privileged: false
+                                          imagePullPolicy: Always
+                                          resources:
+                                              limits:
+                                                  memory: 2000Mi
+                                                  cpu: "0.6"
+                                      failureStrategies: []
+                          - step:
+                                type: SaveCacheS3
+                                name: cache for later
+                                identifier: save_testing_cache
+                                spec:
+                                    connectorRef: org.harness_aws_s3_build_cache
+                                    region: us-west-2
+                                    bucket: harness-build-cache
+                                    key: basis-platform-rubocop-cache
+                                    sourcePaths:
+                                        - /test_artifacts/.cache/rubocop_cache
+                                        - /test_artifacts/.cache/.npm-cache
+                                    archiveFormat: Tar
+                  sharedPaths:
+                      - /test_artifacts/.cache
+              when:
+                  pipelineStatus: Success
+                  condition: <+pipeline.variables.run> == "test" || <+pipeline.variables.run> == "build_test"
+        - parallel:
+              - stage:
+                    name: ui-unit-specs-1
+                    identifier: unitspecs1
+                    type: CI
+                    spec:
+                        cloneCodebase: true
+                        infrastructure:
+                            type: KubernetesDirect
+                            spec:
+                                connectorRef: <+pipeline.variables.connector_ref_name>
+                                namespace: <+pipeline.variables.connector_namespace>
+                        execution:
+                            steps:
+                                - step:
+                                      type: RestoreCacheS3
+                                      name: restore lint cache
+                                      identifier: restore_testing_cache
+                                      spec:
+                                          connectorRef: org.harness_aws_s3_build_cache
+                                          region: us-west-2
+                                          bucket: harness-build-cache
+                                          key: basis-platform-rubocop-cache
+                                          archiveFormat: Tar
+                                          failIfKeyNotFound: false
+                                      when:
+                                          stageStatus: Success
+                                      failureStrategies: []
+                                - step:
+                                      name: npm-specs
+                                      identifier: npmspecs
+                                      template:
+                                          templateRef: build_centromediamanager_npmspecs
+                                          versionLabel: 1.0.1
+                                          templateInputs:
+                                              type: Run
+                                              spec:
+                                                  envVariables:
+                                                      CHUNK: "1"
+                                                      TOTAL_CHUNKS: "1"
+                                - step:
+                                      type: SaveCacheS3
+                                      name: cache for later
+                                      identifier: save_testing_cache
+                                      spec:
+                                          connectorRef: org.harness_aws_s3_build_cache
+                                          region: us-west-2
+                                          bucket: harness-build-cache
+                                          key: basis-platform-rubocop-cache
+                                          sourcePaths:
+                                              - /test_artifacts/.cache/.npm-cache
+                                          archiveFormat: Tar
+                        sharedPaths:
+                            - /test_artifacts/.cache
+                    when:
+                        pipelineStatus: Success
+                        condition: <+pipeline.variables.run> == "test" || <+pipeline.variables.run> == "build_test"
+              - stage:
+                    name: root-unit-spec1
+                    identifier: rootunitspec1
+                    template:
+                        templateRef: build_centromediamanager_root_stage
+                        versionLabel: 1.0.1
+                        templateInputs:
+                            type: CI
+                            spec:
+                                infrastructure:
+                                    type: KubernetesDirect
+                                    spec:
+                                        connectorRef: <+pipeline.variables.connector_ref_name>
+                                        namespace: <+pipeline.variables.connector_namespace>
+                                execution:
+                                    steps:
+                                        - step:
+                                              identifier: root_specs
+                                              template:
+                                                  templateInputs:
+                                                      type: Run
+                                                      spec:
+                                                          envVariables:
+                                                              CHUNK: "1"
+                                                              TOTAL_CHUNKS: "24"
+                            variables:
+                                - name: skip
+                                  type: String
+                                  value: <+input>
+    properties:
+        ci:
+            codebase:
+                connectorRef: harness_bitbucketapi_centromediamanager
+                build: <+input>
+    variables:
+        - name: repo_branch
+          type: String
+          value: <+input>
+        - name: repo_commit
+          type: String
+          value: <+input>
+        - name: repo_name
+          type: String
+          value: <+input>
+        - name: repo_workspace
+          type: String
+          value: <+input>
+        - name: run
+          type: String
+          value: <+input>
+        - name: bitbucket_pass
+          type: Secret
+          value: <+input>
+        - name: bitbucket_user
+          type: String
+          value: <+input>
+        - name: connector_ref_name
+          type: String
+          value: <+input>
+        - name: connector_namespace
+          type: String
+          value: <+input>
