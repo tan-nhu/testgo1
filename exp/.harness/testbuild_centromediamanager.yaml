@@ -195,6 +195,64 @@ pipeline:
                                 - name: skip
                                   type: String
                                   value: <+input>
+              - stage:
+                    name: root-unit-spec2
+                    identifier: rootunitspec2
+                    template:
+                        templateRef: build_centromediamanager_root_stage
+                        versionLabel: 1.0.1
+                        templateInputs:
+                            type: CI
+                            spec:
+                                infrastructure:
+                                    type: KubernetesDirect
+                                    spec:
+                                        connectorRef: <+pipeline.variables.connector_ref_name>
+                                        namespace: <+pipeline.variables.connector_namespace>
+                                execution:
+                                    steps:
+                                        - step:
+                                              identifier: root_specs
+                                              template:
+                                                  templateInputs:
+                                                      type: Run
+                                                      spec:
+                                                          envVariables:
+                                                              CHUNK: "2"
+                                                              TOTAL_CHUNKS: "24"
+                            variables:
+                                - name: skip
+                                  type: String
+                                  value: <+input>
+              - stage:
+                    name: root-unit-spec3
+                    identifier: rootunitspec3
+                    template:
+                        templateRef: build_centromediamanager_root_stage
+                        versionLabel: 1.0.1
+                        templateInputs:
+                            type: CI
+                            spec:
+                                infrastructure:
+                                    type: KubernetesDirect
+                                    spec:
+                                        connectorRef: <+pipeline.variables.connector_ref_name>
+                                        namespace: <+pipeline.variables.connector_namespace>
+                                execution:
+                                    steps:
+                                        - step:
+                                              identifier: root_specs
+                                              template:
+                                                  templateInputs:
+                                                      type: Run
+                                                      spec:
+                                                          envVariables:
+                                                              CHUNK: "3"
+                                                              TOTAL_CHUNKS: "24"
+                            variables:
+                                - name: skip
+                                  type: String
+                                  value: <+input>
     properties:
         ci:
             codebase:
