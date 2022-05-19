@@ -1,0 +1,874 @@
+pipeline:
+    name: TestPipeline2
+    identifier: TestPipeline2
+    projectIdentifier: RajathaTest2
+    orgIdentifier: default
+    tags: {}
+    stages:
+        - stage:
+              name: lint
+              identifier: lint
+              type: CI
+              spec:
+                  cloneCodebase: true
+                  infrastructure:
+                      type: KubernetesDirect
+                      spec:
+                          connectorRef: org.harness_kubernetes_eks_bld
+                          namespace: build-namespace
+                          initTimeout: 1h
+                  execution:
+                      steps:
+                          - step:
+                                type: RestoreCacheS3
+                                name: restore lint cache
+                                identifier: restore_testing_cache
+                                spec:
+                                    connectorRef: org.harness_aws_s3_build_cache
+                                    region: us-west-2
+                                    bucket: harness-build-cache
+                                    key: basis-platform-rubocop-cache
+                                    archiveFormat: Tar
+                                    failIfKeyNotFound: false
+                                when:
+                                    stageStatus: Success
+                                failureStrategies: []
+                          - parallel:
+                                - step:
+                                      type: Run
+                                      name: rubocop
+                                      identifier: rubocop
+                                      spec:
+                                          connectorRef: org.harness_artifactory_docker
+                                          image: artifactory.basis.net/basis/basis:base-dev
+                                          shell: Sh
+                                          command: bundle exec rubocop --parallel --display-time --cache true --cache-root /test_artifacts/.cache/rubocop_cache
+                                          privileged: false
+                                          envVariables:
+                                              RUBOCOP_CACHE_ROOT: /test_artifacts/.cache/rubocop_cache
+                                          imagePullPolicy: Always
+                                          resources:
+                                              limits:
+                                                  memory: 3000Mi
+                                                  cpu: "1.0"
+                                      failureStrategies: []
+                                - step:
+                                      type: Run
+                                      name: brakeman
+                                      identifier: brakemann
+                                      spec:
+                                          connectorRef: org.harness_artifactory_docker
+                                          image: artifactory.basis.net/basis/basis:base-dev
+                                          shell: Sh
+                                          command: |-
+                                              
+                                              bundle exec brakeman -A --no-progress
+                                          privileged: false
+                                          imagePullPolicy: Always
+                                          resources:
+                                              limits:
+                                                  memory: 500Mi
+                                                  cpu: "0.2"
+                                      failureStrategies: []
+                                - step:
+                                      type: Run
+                                      name: npm-lint
+                                      identifier: npmlint
+                                      spec:
+                                          connectorRef: org.harness_artifactory_docker
+                                          image: artifactory.basis.net/basis/basis:base-dev
+                                          shell: Sh
+                                          command: |-
+                                              npm config set cache /test_artifacts/.cache/.npm-cache --global 
+                                              cd components/ui
+                                              npm cache add .
+                                              npm install
+                                              npm run lint
+                                          privileged: false
+                                          imagePullPolicy: Always
+                                          resources:
+                                              limits:
+                                                  memory: 2000Mi
+                                                  cpu: "0.6"
+                                      failureStrategies: []
+                          - step:
+                                type: SaveCacheS3
+                                name: cache for later
+                                identifier: save_testing_cache
+                                spec:
+                                    connectorRef: org.harness_aws_s3_build_cache
+                                    region: us-west-2
+                                    bucket: harness-build-cache
+                                    key: basis-platform-rubocop-cache
+                                    sourcePaths:
+                                        - /test_artifacts/.cache/rubocop_cache
+                                        - /test_artifacts/.cache/.npm-cache
+                                    archiveFormat: Tar
+                  sharedPaths:
+                      - /test_artifacts/.cache
+              when:
+                  pipelineStatus: Success
+                  condition: <+pipeline.variables.run> == "test" || <+pipeline.variables.run> == "build_test"
+        - parallel:
+              - stage:
+                    name: root-feature-specs1
+                    identifier: rootfeaturespecs1
+                    template:
+                        templateRef: build_centromediamanager_feature_stage
+                        versionLabel: 1.0.1
+                        templateInputs:
+                            type: CI
+                            spec:
+                                infrastructure:
+                                    type: KubernetesDirect
+                                    spec:
+                                        connectorRef: <+pipeline.variables.connector_ref_name>
+                                        namespace: <+pipeline.variables.connector_namespace>
+                                execution:
+                                    steps:
+                                        - step:
+                                              identifier: feature_specs
+                                              template:
+                                                  templateInputs:
+                                                      type: Run
+                                                      spec:
+                                                          envVariables:
+                                                              CHUNK: "1"
+                                                              TOTAL_CHUNKS: "24"
+                            variables:
+                                - name: skip
+                                  type: String
+                                  value: "false"
+              - stage:
+                    name: root-feature-specs2
+                    identifier: rootfeaturespecs2
+                    template:
+                        templateRef: build_centromediamanager_feature_stage
+                        versionLabel: 1.0.1
+                        templateInputs:
+                            type: CI
+                            spec:
+                                infrastructure:
+                                    type: KubernetesDirect
+                                    spec:
+                                        connectorRef: <+pipeline.variables.connector_ref_name>
+                                        namespace: <+pipeline.variables.connector_namespace>
+                                execution:
+                                    steps:
+                                        - step:
+                                              identifier: feature_specs
+                                              template:
+                                                  templateInputs:
+                                                      type: Run
+                                                      spec:
+                                                          envVariables:
+                                                              CHUNK: "2"
+                                                              TOTAL_CHUNKS: "24"
+                            variables:
+                                - name: skip
+                                  type: String
+                                  value: "false"
+              - stage:
+                    name: root-feature-specs3
+                    identifier: rootfeaturespecs3
+                    template:
+                        templateRef: build_centromediamanager_feature_stage
+                        versionLabel: 1.0.1
+                        templateInputs:
+                            type: CI
+                            spec:
+                                infrastructure:
+                                    type: KubernetesDirect
+                                    spec:
+                                        connectorRef: <+pipeline.variables.connector_ref_name>
+                                        namespace: <+pipeline.variables.connector_namespace>
+                                execution:
+                                    steps:
+                                        - step:
+                                              identifier: feature_specs
+                                              template:
+                                                  templateInputs:
+                                                      type: Run
+                                                      spec:
+                                                          envVariables:
+                                                              CHUNK: "3"
+                                                              TOTAL_CHUNKS: "24"
+                            variables:
+                                - name: skip
+                                  type: String
+                                  value: "false"
+              - stage:
+                    name: root-feature-specs4
+                    identifier: rootfeaturespecs4
+                    template:
+                        templateRef: build_centromediamanager_feature_stage
+                        versionLabel: 1.0.1
+                        templateInputs:
+                            type: CI
+                            spec:
+                                infrastructure:
+                                    type: KubernetesDirect
+                                    spec:
+                                        connectorRef: <+pipeline.variables.connector_ref_name>
+                                        namespace: <+pipeline.variables.connector_namespace>
+                                execution:
+                                    steps:
+                                        - step:
+                                              identifier: feature_specs
+                                              template:
+                                                  templateInputs:
+                                                      type: Run
+                                                      spec:
+                                                          envVariables:
+                                                              CHUNK: "4"
+                                                              TOTAL_CHUNKS: "24"
+                            variables:
+                                - name: skip
+                                  type: String
+                                  value: "false"
+              - stage:
+                    name: root-feature-specs5
+                    identifier: rootfeaturespecs5
+                    template:
+                        templateRef: build_centromediamanager_feature_stage
+                        versionLabel: 1.0.1
+                        templateInputs:
+                            type: CI
+                            spec:
+                                infrastructure:
+                                    type: KubernetesDirect
+                                    spec:
+                                        connectorRef: <+pipeline.variables.connector_ref_name>
+                                        namespace: <+pipeline.variables.connector_namespace>
+                                execution:
+                                    steps:
+                                        - step:
+                                              identifier: feature_specs
+                                              template:
+                                                  templateInputs:
+                                                      type: Run
+                                                      spec:
+                                                          envVariables:
+                                                              CHUNK: "5"
+                                                              TOTAL_CHUNKS: "24"
+                            variables:
+                                - name: skip
+                                  type: String
+                                  value: "false"
+              - stage:
+                    name: root-feature-specs6
+                    identifier: rootfeaturespecs6
+                    template:
+                        templateRef: build_centromediamanager_feature_stage
+                        versionLabel: 1.0.1
+                        templateInputs:
+                            type: CI
+                            spec:
+                                infrastructure:
+                                    type: KubernetesDirect
+                                    spec:
+                                        connectorRef: <+pipeline.variables.connector_ref_name>
+                                        namespace: <+pipeline.variables.connector_namespace>
+                                execution:
+                                    steps:
+                                        - step:
+                                              identifier: feature_specs
+                                              template:
+                                                  templateInputs:
+                                                      type: Run
+                                                      spec:
+                                                          envVariables:
+                                                              CHUNK: "6"
+                                                              TOTAL_CHUNKS: "24"
+                            variables:
+                                - name: skip
+                                  type: String
+                                  value: "false"
+              - stage:
+                    name: root-feature-specs7
+                    identifier: rootfeaturespecs7
+                    template:
+                        templateRef: build_centromediamanager_feature_stage
+                        versionLabel: 1.0.1
+                        templateInputs:
+                            type: CI
+                            spec:
+                                infrastructure:
+                                    type: KubernetesDirect
+                                    spec:
+                                        connectorRef: <+pipeline.variables.connector_ref_name>
+                                        namespace: <+pipeline.variables.connector_namespace>
+                                execution:
+                                    steps:
+                                        - step:
+                                              identifier: feature_specs
+                                              template:
+                                                  templateInputs:
+                                                      type: Run
+                                                      spec:
+                                                          envVariables:
+                                                              CHUNK: "7"
+                                                              TOTAL_CHUNKS: "24"
+                            variables:
+                                - name: skip
+                                  type: String
+                                  value: "false"
+              - stage:
+                    name: root-feature-specs8
+                    identifier: rootfeaturespecs8
+                    template:
+                        templateRef: build_centromediamanager_feature_stage
+                        versionLabel: 1.0.1
+                        templateInputs:
+                            type: CI
+                            spec:
+                                infrastructure:
+                                    type: KubernetesDirect
+                                    spec:
+                                        connectorRef: <+pipeline.variables.connector_ref_name>
+                                        namespace: <+pipeline.variables.connector_namespace>
+                                execution:
+                                    steps:
+                                        - step:
+                                              identifier: feature_specs
+                                              template:
+                                                  templateInputs:
+                                                      type: Run
+                                                      spec:
+                                                          envVariables:
+                                                              CHUNK: "8"
+                                                              TOTAL_CHUNKS: "24"
+                            variables:
+                                - name: skip
+                                  type: String
+                                  value: "false"
+              - stage:
+                    name: root-feature-specs9
+                    identifier: rootfeaturespecs9
+                    template:
+                        templateRef: build_centromediamanager_feature_stage
+                        versionLabel: 1.0.1
+                        templateInputs:
+                            type: CI
+                            spec:
+                                infrastructure:
+                                    type: KubernetesDirect
+                                    spec:
+                                        connectorRef: <+pipeline.variables.connector_ref_name>
+                                        namespace: <+pipeline.variables.connector_namespace>
+                                execution:
+                                    steps:
+                                        - step:
+                                              identifier: feature_specs
+                                              template:
+                                                  templateInputs:
+                                                      type: Run
+                                                      spec:
+                                                          envVariables:
+                                                              CHUNK: "9"
+                                                              TOTAL_CHUNKS: "24"
+                            variables:
+                                - name: skip
+                                  type: String
+                                  value: "false"
+              - stage:
+                    name: root-feature-specs10
+                    identifier: rootfeaturespecs10
+                    template:
+                        templateRef: build_centromediamanager_feature_stage
+                        versionLabel: 1.0.1
+                        templateInputs:
+                            type: CI
+                            spec:
+                                infrastructure:
+                                    type: KubernetesDirect
+                                    spec:
+                                        connectorRef: <+pipeline.variables.connector_ref_name>
+                                        namespace: <+pipeline.variables.connector_namespace>
+                                execution:
+                                    steps:
+                                        - step:
+                                              identifier: feature_specs
+                                              template:
+                                                  templateInputs:
+                                                      type: Run
+                                                      spec:
+                                                          envVariables:
+                                                              CHUNK: "10"
+                                                              TOTAL_CHUNKS: "24"
+                            variables:
+                                - name: skip
+                                  type: String
+                                  value: "false"
+              - stage:
+                    name: root-feature-specs11
+                    identifier: rootfeaturespecs11
+                    template:
+                        templateRef: build_centromediamanager_feature_stage
+                        versionLabel: 1.0.1
+                        templateInputs:
+                            type: CI
+                            spec:
+                                infrastructure:
+                                    type: KubernetesDirect
+                                    spec:
+                                        connectorRef: <+pipeline.variables.connector_ref_name>
+                                        namespace: <+pipeline.variables.connector_namespace>
+                                execution:
+                                    steps:
+                                        - step:
+                                              identifier: feature_specs
+                                              template:
+                                                  templateInputs:
+                                                      type: Run
+                                                      spec:
+                                                          envVariables:
+                                                              CHUNK: "11"
+                                                              TOTAL_CHUNKS: "24"
+                            variables:
+                                - name: skip
+                                  type: String
+                                  value: "false"
+              - stage:
+                    name: root-feature-specs12
+                    identifier: rootfeaturespecs12
+                    template:
+                        templateRef: build_centromediamanager_feature_stage
+                        versionLabel: 1.0.1
+                        templateInputs:
+                            type: CI
+                            spec:
+                                infrastructure:
+                                    type: KubernetesDirect
+                                    spec:
+                                        connectorRef: <+pipeline.variables.connector_ref_name>
+                                        namespace: <+pipeline.variables.connector_namespace>
+                                execution:
+                                    steps:
+                                        - step:
+                                              identifier: feature_specs
+                                              template:
+                                                  templateInputs:
+                                                      type: Run
+                                                      spec:
+                                                          envVariables:
+                                                              CHUNK: "12"
+                                                              TOTAL_CHUNKS: "24"
+                            variables:
+                                - name: skip
+                                  type: String
+                                  value: "false"
+              - stage:
+                    name: root-feature-specs13
+                    identifier: rootfeaturespecs13
+                    template:
+                        templateRef: build_centromediamanager_feature_stage
+                        versionLabel: 1.0.1
+                        templateInputs:
+                            type: CI
+                            spec:
+                                infrastructure:
+                                    type: KubernetesDirect
+                                    spec:
+                                        connectorRef: <+pipeline.variables.connector_ref_name>
+                                        namespace: <+pipeline.variables.connector_namespace>
+                                execution:
+                                    steps:
+                                        - step:
+                                              identifier: feature_specs
+                                              template:
+                                                  templateInputs:
+                                                      type: Run
+                                                      spec:
+                                                          envVariables:
+                                                              CHUNK: "13"
+                                                              TOTAL_CHUNKS: "24"
+                            variables:
+                                - name: skip
+                                  type: String
+                                  value: "false"
+              - stage:
+                    name: root-feature-specs14
+                    identifier: rootfeaturespecs14
+                    template:
+                        templateRef: build_centromediamanager_feature_stage
+                        versionLabel: 1.0.1
+                        templateInputs:
+                            type: CI
+                            spec:
+                                infrastructure:
+                                    type: KubernetesDirect
+                                    spec:
+                                        connectorRef: <+pipeline.variables.connector_ref_name>
+                                        namespace: <+pipeline.variables.connector_namespace>
+                                execution:
+                                    steps:
+                                        - step:
+                                              identifier: feature_specs
+                                              template:
+                                                  templateInputs:
+                                                      type: Run
+                                                      spec:
+                                                          envVariables:
+                                                              CHUNK: "14"
+                                                              TOTAL_CHUNKS: "24"
+                            variables:
+                                - name: skip
+                                  type: String
+                                  value: "false"
+              - stage:
+                    name: root-feature-specs15
+                    identifier: rootfeaturespecs15
+                    template:
+                        templateRef: build_centromediamanager_feature_stage
+                        versionLabel: 1.0.1
+                        templateInputs:
+                            type: CI
+                            spec:
+                                infrastructure:
+                                    type: KubernetesDirect
+                                    spec:
+                                        connectorRef: <+pipeline.variables.connector_ref_name>
+                                        namespace: <+pipeline.variables.connector_namespace>
+                                execution:
+                                    steps:
+                                        - step:
+                                              identifier: feature_specs
+                                              template:
+                                                  templateInputs:
+                                                      type: Run
+                                                      spec:
+                                                          envVariables:
+                                                              CHUNK: "15"
+                                                              TOTAL_CHUNKS: "24"
+                            variables:
+                                - name: skip
+                                  type: String
+                                  value: "false"
+              - stage:
+                    name: root-feature-specs16
+                    identifier: rootfeaturespecs16
+                    template:
+                        templateRef: build_centromediamanager_feature_stage
+                        versionLabel: 1.0.1
+                        templateInputs:
+                            type: CI
+                            spec:
+                                infrastructure:
+                                    type: KubernetesDirect
+                                    spec:
+                                        connectorRef: <+pipeline.variables.connector_ref_name>
+                                        namespace: <+pipeline.variables.connector_namespace>
+                                execution:
+                                    steps:
+                                        - step:
+                                              identifier: feature_specs
+                                              template:
+                                                  templateInputs:
+                                                      type: Run
+                                                      spec:
+                                                          envVariables:
+                                                              CHUNK: "16"
+                                                              TOTAL_CHUNKS: "24"
+                            variables:
+                                - name: skip
+                                  type: String
+                                  value: "false"
+              - stage:
+                    name: root-feature-specs17
+                    identifier: rootfeaturespecs17
+                    template:
+                        templateRef: build_centromediamanager_feature_stage
+                        versionLabel: 1.0.1
+                        templateInputs:
+                            type: CI
+                            spec:
+                                infrastructure:
+                                    type: KubernetesDirect
+                                    spec:
+                                        connectorRef: <+pipeline.variables.connector_ref_name>
+                                        namespace: <+pipeline.variables.connector_namespace>
+                                execution:
+                                    steps:
+                                        - step:
+                                              identifier: feature_specs
+                                              template:
+                                                  templateInputs:
+                                                      type: Run
+                                                      spec:
+                                                          envVariables:
+                                                              CHUNK: "17"
+                                                              TOTAL_CHUNKS: "24"
+                            variables:
+                                - name: skip
+                                  type: String
+                                  value: "false"
+              - stage:
+                    name: root-feature-specs18
+                    identifier: rootfeaturespecs18
+                    template:
+                        templateRef: build_centromediamanager_feature_stage
+                        versionLabel: 1.0.1
+                        templateInputs:
+                            type: CI
+                            spec:
+                                infrastructure:
+                                    type: KubernetesDirect
+                                    spec:
+                                        connectorRef: <+pipeline.variables.connector_ref_name>
+                                        namespace: <+pipeline.variables.connector_namespace>
+                                execution:
+                                    steps:
+                                        - step:
+                                              identifier: feature_specs
+                                              template:
+                                                  templateInputs:
+                                                      type: Run
+                                                      spec:
+                                                          envVariables:
+                                                              CHUNK: "18"
+                                                              TOTAL_CHUNKS: "24"
+                            variables:
+                                - name: skip
+                                  type: String
+                                  value: "false"
+              - stage:
+                    name: root-feature-specs19
+                    identifier: rootfeaturespecs19
+                    template:
+                        templateRef: build_centromediamanager_feature_stage
+                        versionLabel: 1.0.1
+                        templateInputs:
+                            type: CI
+                            spec:
+                                infrastructure:
+                                    type: KubernetesDirect
+                                    spec:
+                                        connectorRef: <+pipeline.variables.connector_ref_name>
+                                        namespace: <+pipeline.variables.connector_namespace>
+                                execution:
+                                    steps:
+                                        - step:
+                                              identifier: feature_specs
+                                              template:
+                                                  templateInputs:
+                                                      type: Run
+                                                      spec:
+                                                          envVariables:
+                                                              CHUNK: "19"
+                                                              TOTAL_CHUNKS: "24"
+                            variables:
+                                - name: skip
+                                  type: String
+                                  value: "false"
+              - stage:
+                    name: root-feature-specs20
+                    identifier: rootfeaturespecs20
+                    template:
+                        templateRef: build_centromediamanager_feature_stage
+                        versionLabel: 1.0.1
+                        templateInputs:
+                            type: CI
+                            spec:
+                                infrastructure:
+                                    type: KubernetesDirect
+                                    spec:
+                                        connectorRef: <+pipeline.variables.connector_ref_name>
+                                        namespace: <+pipeline.variables.connector_namespace>
+                                execution:
+                                    steps:
+                                        - step:
+                                              identifier: feature_specs
+                                              template:
+                                                  templateInputs:
+                                                      type: Run
+                                                      spec:
+                                                          envVariables:
+                                                              CHUNK: "20"
+                                                              TOTAL_CHUNKS: "24"
+                            variables:
+                                - name: skip
+                                  type: String
+                                  value: "false"
+              - stage:
+                    name: root-feature-specs21
+                    identifier: rootfeaturespecs21
+                    template:
+                        templateRef: build_centromediamanager_feature_stage
+                        versionLabel: 1.0.1
+                        templateInputs:
+                            type: CI
+                            spec:
+                                infrastructure:
+                                    type: KubernetesDirect
+                                    spec:
+                                        connectorRef: <+pipeline.variables.connector_ref_name>
+                                        namespace: <+pipeline.variables.connector_namespace>
+                                execution:
+                                    steps:
+                                        - step:
+                                              identifier: feature_specs
+                                              template:
+                                                  templateInputs:
+                                                      type: Run
+                                                      spec:
+                                                          envVariables:
+                                                              CHUNK: "21"
+                                                              TOTAL_CHUNKS: "24"
+                            variables:
+                                - name: skip
+                                  type: String
+                                  value: "false"
+              - stage:
+                    name: root-feature-specs22
+                    identifier: rootfeaturespecs22
+                    template:
+                        templateRef: build_centromediamanager_feature_stage
+                        versionLabel: 1.0.1
+                        templateInputs:
+                            type: CI
+                            spec:
+                                infrastructure:
+                                    type: KubernetesDirect
+                                    spec:
+                                        connectorRef: <+pipeline.variables.connector_ref_name>
+                                        namespace: <+pipeline.variables.connector_namespace>
+                                execution:
+                                    steps:
+                                        - step:
+                                              identifier: feature_specs
+                                              template:
+                                                  templateInputs:
+                                                      type: Run
+                                                      spec:
+                                                          envVariables:
+                                                              CHUNK: "22"
+                                                              TOTAL_CHUNKS: "24"
+                            variables:
+                                - name: skip
+                                  type: String
+                                  value: "false"
+              - stage:
+                    name: root-feature-specs23
+                    identifier: rootfeaturespecs23
+                    template:
+                        templateRef: build_centromediamanager_feature_stage
+                        versionLabel: 1.0.1
+                        templateInputs:
+                            type: CI
+                            spec:
+                                infrastructure:
+                                    type: KubernetesDirect
+                                    spec:
+                                        connectorRef: <+pipeline.variables.connector_ref_name>
+                                        namespace: <+pipeline.variables.connector_namespace>
+                                execution:
+                                    steps:
+                                        - step:
+                                              identifier: feature_specs
+                                              template:
+                                                  templateInputs:
+                                                      type: Run
+                                                      spec:
+                                                          envVariables:
+                                                              CHUNK: "23"
+                                                              TOTAL_CHUNKS: "24"
+                            variables:
+                                - name: skip
+                                  type: String
+                                  value: "false"
+              - stage:
+                    name: root-feature-specs24
+                    identifier: rootfeaturespecs24
+                    template:
+                        templateRef: build_centromediamanager_feature_stage
+                        versionLabel: 1.0.1
+                        templateInputs:
+                            type: CI
+                            spec:
+                                infrastructure:
+                                    type: KubernetesDirect
+                                    spec:
+                                        connectorRef: <+pipeline.variables.connector_ref_name>
+                                        namespace: <+pipeline.variables.connector_namespace>
+                                execution:
+                                    steps:
+                                        - step:
+                                              identifier: feature_specs
+                                              template:
+                                                  templateInputs:
+                                                      type: Run
+                                                      spec:
+                                                          envVariables:
+                                                              CHUNK: "24"
+                                                              TOTAL_CHUNKS: "24"
+                            variables:
+                                - name: skip
+                                  type: String
+                                  value: "false"
+        - stage:
+              name: build
+              identifier: build
+              type: CI
+              spec:
+                  cloneCodebase: true
+                  infrastructure:
+                      type: KubernetesDirect
+                      spec:
+                          connectorRef: org.harness_kubernetes_eks_bld
+                          namespace: build-namespace
+                          initTimeout: 25m
+                  execution:
+                      steps:
+                          - step:
+                                type: BuildAndPushDockerRegistry
+                                name: build-and-push
+                                identifier: buildandpush
+                                spec:
+                                    connectorRef: org.harness_artifactory_docker
+                                    repo: artifactory.basis.net/basis/basis
+                                    tags:
+                                        - <+pipeline.variables.repo_commit>-<+pipeline.sequenceId>
+                                    dockerfile: kubernetes/Dockerfile
+                                    optimize: true
+                                    remoteCacheRepo: artifactory.basis.net/basis/basis-cache
+                                    resources:
+                                        limits:
+                                            memory: 4000Mi
+                                failureStrategies: []
+              when:
+                  pipelineStatus: Success
+                  condition: <+pipeline.variables.run> == "build" || <+pipeline.variables.run> == "build_test"
+    properties:
+        ci:
+            codebase:
+                connectorRef: harness_bitbucketapi_centromediamanager
+                build: <+input>
+    variables:
+        - name: repo_branch
+          type: String
+          value: <+input>
+        - name: repo_commit
+          type: String
+          value: <+input>
+        - name: repo_name
+          type: String
+          value: <+input>
+        - name: repo_workspace
+          type: String
+          value: <+input>
+        - name: run
+          type: String
+          value: <+input>
+        - name: bitbucket_pass
+          type: Secret
+          value: <+input>
+        - name: bitbucket_user
+          type: String
+          value: <+input>
+        - name: connector_ref_name
+          type: String
+          value: <+input>
+        - name: connector_namespace
+          type: String
+          value: <+input>
