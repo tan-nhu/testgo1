@@ -111,66 +111,10 @@ pipeline:
                   condition: <+pipeline.variables.run> == "test" || <+pipeline.variables.run> == "build_test"
         - parallel:
               - stage:
-                    name: ui-unit-specs-1
-                    identifier: unitspecs1
-                    type: CI
-                    spec:
-                        cloneCodebase: true
-                        infrastructure:
-                            type: KubernetesDirect
-                            spec:
-                                connectorRef: <+pipeline.variables.connector_ref_name>
-                                namespace: <+pipeline.variables.connector_namespace>
-                        execution:
-                            steps:
-                                - step:
-                                      type: RestoreCacheS3
-                                      name: restore lint cache
-                                      identifier: restore_testing_cache
-                                      spec:
-                                          connectorRef: org.harness_aws_s3_build_cache
-                                          region: us-west-2
-                                          bucket: harness-build-cache
-                                          key: basis-platform-rubocop-cache
-                                          archiveFormat: Tar
-                                          failIfKeyNotFound: false
-                                      when:
-                                          stageStatus: Success
-                                      failureStrategies: []
-                                - step:
-                                      name: npm-specs
-                                      identifier: npmspecs
-                                      template:
-                                          templateRef: build_centromediamanager_npmspecs
-                                          versionLabel: 1.0.1
-                                          templateInputs:
-                                              type: Run
-                                              spec:
-                                                  envVariables:
-                                                      CHUNK: "1"
-                                                      TOTAL_CHUNKS: "1"
-                                - step:
-                                      type: SaveCacheS3
-                                      name: cache for later
-                                      identifier: save_testing_cache
-                                      spec:
-                                          connectorRef: org.harness_aws_s3_build_cache
-                                          region: us-west-2
-                                          bucket: harness-build-cache
-                                          key: basis-platform-rubocop-cache
-                                          sourcePaths:
-                                              - /test_artifacts/.cache/.npm-cache
-                                          archiveFormat: Tar
-                        sharedPaths:
-                            - /test_artifacts/.cache
-                    when:
-                        pipelineStatus: Success
-                        condition: <+pipeline.variables.run> == "test" || <+pipeline.variables.run> == "build_test"
-              - stage:
-                    name: root-unit-spec1
-                    identifier: rootunitspec1
+                    name: root-feature-specs1
+                    identifier: rootfeaturespecs1
                     template:
-                        templateRef: build_centromediamanager_root_stage
+                        templateRef: build_centromediamanager_feature_stage
                         versionLabel: 1.0.1
                         templateInputs:
                             type: CI
@@ -183,7 +127,7 @@ pipeline:
                                 execution:
                                     steps:
                                         - step:
-                                              identifier: root_specs
+                                              identifier: feature_specs
                                               template:
                                                   templateInputs:
                                                       type: Run
@@ -194,12 +138,12 @@ pipeline:
                             variables:
                                 - name: skip
                                   type: String
-                                  value: <+input>
+                                  value: "false"
               - stage:
-                    name: root-unit-spec2
-                    identifier: rootunitspec2
+                    name: root-feature-specs2
+                    identifier: rootfeaturespecs2
                     template:
-                        templateRef: build_centromediamanager_root_stage
+                        templateRef: build_centromediamanager_feature_stage
                         versionLabel: 1.0.1
                         templateInputs:
                             type: CI
@@ -212,7 +156,7 @@ pipeline:
                                 execution:
                                     steps:
                                         - step:
-                                              identifier: root_specs
+                                              identifier: feature_specs
                                               template:
                                                   templateInputs:
                                                       type: Run
@@ -223,36 +167,7 @@ pipeline:
                             variables:
                                 - name: skip
                                   type: String
-                                  value: <+input>
-              - stage:
-                    name: root-unit-spec3
-                    identifier: rootunitspec3
-                    template:
-                        templateRef: build_centromediamanager_root_stage
-                        versionLabel: 1.0.1
-                        templateInputs:
-                            type: CI
-                            spec:
-                                infrastructure:
-                                    type: KubernetesDirect
-                                    spec:
-                                        connectorRef: <+pipeline.variables.connector_ref_name>
-                                        namespace: <+pipeline.variables.connector_namespace>
-                                execution:
-                                    steps:
-                                        - step:
-                                              identifier: root_specs
-                                              template:
-                                                  templateInputs:
-                                                      type: Run
-                                                      spec:
-                                                          envVariables:
-                                                              CHUNK: "3"
-                                                              TOTAL_CHUNKS: "24"
-                            variables:
-                                - name: skip
-                                  type: String
-                                  value: <+input>
+                                  value: "false"
     properties:
         ci:
             codebase:
