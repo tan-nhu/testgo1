@@ -2,6 +2,6 @@
 GO + Docker + unit tests
 
 
-## Running the app locally
+# HelloWorldGoServer
+GO + Docker + unit tests
 
-```bash
