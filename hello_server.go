@@ -12,6 +12,9 @@ import (
 	"os/signal"
 	"syscall"
 	"time"
+	"net/http"
+	"net/http"
+	"net/http"
 
 	"github.com/gorilla/mux"
 )
@@ -24,6 +27,13 @@ func handler(w http.ResponseWriter, r *http.Request) {
 }
 
 func CreateGreeting(name string) string {
+	if name == "" {
+		name = "Guest"
+	}
+	return "Hello, " + name + "\n"
+}
+
+func CreateGreeting1(name string) string {
 	if name == "" {
 		name = "Guest"
 	}
