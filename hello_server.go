@@ -6,14 +6,15 @@ import (
 	"net/http"
 	"net/http"
 	"net/http"
-	"net/http"
-	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
 	"time"
+	"net/http"
+	"net/http"
 
 	"github.com/gorilla/mux"
+	"github.com/gorilla/mux1"
 )
 
 func handler(w http.ResponseWriter, r *http.Request) {
@@ -30,18 +31,19 @@ func CreateGreeting(name string) string {
 	return "Hello, " + name + "\n"
 }
 
+func CreateGreeting1(name string) string {
+	if name == "" {
+		name = "Guest"
+	}
+	return "Hello, " + name + "\n"
+}
+
 func main() {
 	// Create Server and Route Handlers
 	r := mux.NewRouter()
 
 	r.HandleFunc("/", handler)
 
-	srv := &http.Server{
-		Handler:      r,
-		Addr:         ":8080",
-		ReadTimeout:  10 * time.Second,
-		WriteTimeout: 10 * time.Second,
-	}
 
 	// Start Server
 	go func() {
@@ -50,6 +52,13 @@ func main() {
 			log.Fatal(err)
 		}
 	}()
+	
+	srv := &http.Server{
+		Handler:      r,
+		Addr:         ":8080",
+		ReadTimeout:  10 * time.Second,
+		WriteTimeout: 10 * time.Second,
+	}
 
 	// Graceful Shutdown
 	waitForShutdown(srv)
