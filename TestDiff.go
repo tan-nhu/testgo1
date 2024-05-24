@@ -32,6 +32,14 @@ var _ = Describe("E2E_TESTS", Label("P0", "E2E"), Ordered, func() {
 	It("Validate Import of harness-core Repository with Authentication", func() {
 		var getRepoResponse *code.GetRepositoryResponse
 		isImporting := true
+		Expect(*getRepoResponse.JSON200.Importing).To(Equal(false), "Failed to import Harness-core in less than 5 minutes")
+	})
+
+	It("Validate Creation of Branch on a Imported Repository", func() {
+		helper.CreateNewBranch(repoName, srcBranch, false, 1)
+		response := helper.GetBranch(repoName, srcBranch)
+		data := utils.GetMapFromHttpResponse(response)
+		Expect(data["name"]).To(Equal(srcBranch), "Branch Not Found")
 		for i := 0; i < 10 && isImporting; i++ {
 			getRepoResponse = helper.GetRepository(repoName)
 			Expect(getRepoResponse.HTTPResponse.StatusCode).To(Equal(200), "Failed To Get Repo")
@@ -43,14 +51,7 @@ var _ = Describe("E2E_TESTS", Label("P0", "E2E"), Ordered, func() {
 				break
 			}
 		}
-		Expect(*getRepoResponse.JSON200.Importing).To(Equal(false), "Failed to import Harness-core in less than 5 minutes")
-	})
 
-	It("Validate Creation of Branch on a Imported Repository", func() {
-		helper.CreateNewBranch(repoName, srcBranch, false, 1)
-		response := helper.GetBranch(repoName, srcBranch)
-		data := utils.GetMapFromHttpResponse(response)
-		Expect(data["name"]).To(Equal(srcBranch), "Branch Not Found")
 	})
 
 	It("Validate Deletion of a Branch", func() {
